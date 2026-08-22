@@ -30,8 +30,7 @@ jobs:
           mkdir -p project
           unzip -q "$ZIP_FILE" -d project
 
-          echo "Isi hasil ekstraksi:"
-          find project -maxdepth 3 -type f | head -100
+          echo "Project berhasil diekstrak."
 
       - name: Find Gradle project
         shell: bash
@@ -45,8 +44,8 @@ jobs:
 
           PROJECT_DIR=$(dirname "$GRADLEW")
 
-          echo "Gradle wrapper ditemukan:"
-          echo "$GRADLEW"
+          echo "Gradle project:"
+          echo "$PROJECT_DIR"
 
           echo "PROJECT_DIR=$PROJECT_DIR" >> "$GITHUB_ENV"
 
@@ -56,19 +55,20 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Gradle
+      - name: Setup Gradle 8.7
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
 
       - name: Check Gradle
-        working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          chmod +x gradlew
-          ./gradlew --version
+          java -version
+          gradle --version
 
       - name: Build Debug APK
         working-directory: ${{ env.PROJECT_DIR }}
         run: |
-          ./gradlew assembleDebug --stacktrace
+          gradle assembleDebug --stacktrace
 
       - name: Find APK
         shell: bash
